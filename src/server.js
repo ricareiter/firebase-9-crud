@@ -13,7 +13,9 @@ import {
   orderBy,
   serverTimestamp,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCOkPmEU4-1zO6FBuzlxpP-8CBt6koTx7M",
@@ -29,6 +31,7 @@ initializeApp(firebaseConfig);
 
 // init services
 const db = getFirestore();
+const auth = getAuth();
 
 // collection ref
 const colRef = collection(db, "books");
@@ -45,6 +48,7 @@ const Server = () => {
   const [author, setAuthor] = useState("");
   const [title, setTitle] = useState("");
   const [deleteId, setDeleteId] = useState("");
+  const [updateId, setUpdateId] = useState("");
 
   /* getDocs(colRef)
     .then((snapshot) => {
@@ -57,6 +61,7 @@ const Server = () => {
       console.log(err.message);
     }); */
 
+  // CONSOLE LOG BOOKS
   onSnapshot(q, (snapshot) => {
     let books = [];
     snapshot.docs.forEach((doc) => {
@@ -65,7 +70,7 @@ const Server = () => {
     console.log(books);
   });
 
-  // add and delete book functions
+  // CREATE BOOK
   const addBookForm = (e) => {
     e.preventDefault();
     addDoc(colRef, {
@@ -77,6 +82,7 @@ const Server = () => {
     });
   };
 
+  // DELETE BOOK
   const deleteBookForm = (e) => {
     e.preventDefault();
 
@@ -87,11 +93,24 @@ const Server = () => {
     });
   };
 
+  // GET BOOK BY ID
   const docRef = doc(db, "books", "N3h4kWQtIemtF00Iyg9m");
 
   getDoc(docRef).then((doc) => {
     console.log(doc.data(), doc.id);
   });
+
+  //UPDATE BOOK
+  const updateForm = (e) => {
+    e.preventDefault();
+
+    const docRefr = doc(db, "books", updateId);
+    updateDoc(docRefr, {
+      title: "updated title",
+    }).then(() => {
+      document.querySelector(".update").reset();
+    });
+  };
 
   return (
     <div>
@@ -123,6 +142,15 @@ const Server = () => {
           onChange={(e) => setDeleteId(e.target.value)}
         />
         <button>Delete a book</button>
+      </form>
+      <form className="update" onSubmit={updateForm}>
+        <label htmlFor="id">Document id:</label>
+        <input
+          type="text"
+          name="id"
+          onChange={(e) => setUpdateId(e.target.value)}
+        />
+        <button>Update a book</button>
       </form>
     </div>
   );
