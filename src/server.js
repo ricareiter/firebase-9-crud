@@ -15,7 +15,7 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCOkPmEU4-1zO6FBuzlxpP-8CBt6koTx7M",
@@ -49,6 +49,8 @@ const Server = () => {
   const [title, setTitle] = useState("");
   const [deleteId, setDeleteId] = useState("");
   const [updateId, setUpdateId] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   /* getDocs(colRef)
     .then((snapshot) => {
@@ -112,6 +114,21 @@ const Server = () => {
     });
   };
 
+  // SIGNING USERS UP
+
+  const signupForm = (e) => {
+    e.preventDefault();
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((cred) => {
+        console.log("User created!", cred.user);
+        document.querySelector(".signup").reset();
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
   return (
     <div>
       <h1>Server</h1>
@@ -151,6 +168,22 @@ const Server = () => {
           onChange={(e) => setUpdateId(e.target.value)}
         />
         <button>Update a book</button>
+      </form>
+      <h2>Firebase Auth</h2>
+      <form className="signup" onSubmit={signupForm}>
+        <label htmlFor="email">Email:</label>
+        <input
+          type="email"
+          name="email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <label htmlFor="email">Password:</label>
+        <input
+          type="password"
+          name="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button>Signup</button>
       </form>
     </div>
   );
