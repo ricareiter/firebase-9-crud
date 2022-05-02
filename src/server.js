@@ -15,7 +15,12 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signOut,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCOkPmEU4-1zO6FBuzlxpP-8CBt6koTx7M",
@@ -51,6 +56,8 @@ const Server = () => {
   const [updateId, setUpdateId] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
 
   /* getDocs(colRef)
     .then((snapshot) => {
@@ -129,6 +136,28 @@ const Server = () => {
       });
   };
 
+  const loginForm = (e) => {
+    e.preventDefault();
+    signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+      .then((cred) => {
+        console.log(cred.user, " is logged in!");
+        document.querySelector(".login").reset();
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
+  const logoutButton = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("User signed out!");
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
   return (
     <div>
       <h1>Server</h1>
@@ -185,6 +214,26 @@ const Server = () => {
         />
         <button>Signup</button>
       </form>
+      <br />
+      <form className="login" onSubmit={loginForm}>
+        <label for="loginEmail">Email</label>
+        <input
+          type="email"
+          name="loginEmail"
+          onChange={(e) => setLoginEmail(e.target.value)}
+        />
+        <label for="loginEmail">Password</label>
+        <input
+          type="password"
+          name="loginPassword"
+          onChange={(e) => setLoginPassword(e.target.value)}
+        />
+        <button>Login</button>
+      </form>
+      <br />
+      <button className="logout" onClick={logoutButton}>
+        Logout
+      </button>
     </div>
   );
 };
